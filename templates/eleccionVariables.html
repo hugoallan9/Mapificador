@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+ <div class="row">
+    <div class="col-lg-3" style="float: left;">
+          <div style="background-color: #00bfff;">
+                <span style="color: rgb(255, 255, 255); text-align: center;"><h2> Escoger las variables</h2></span>
+          </div>
+          <div>
+             <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" value="Siguiente">
+            </form>
+          </div>
+    </div>
+    <div class="col-lg-9" style="float: left;
+    width : 75%;text-align: center;";>
+        <h2 style="text-align: center;">Visualización de tabla</h2>
+        <div style="   margin: auto;
+   width: 50% !important;";>
+            {{ excel | safe }}
+        </div>
+</div>
+{% endblock %}

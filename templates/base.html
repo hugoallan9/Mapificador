@@ -1,0 +1,84 @@
+{% load unicorn %}
+<html>
+    <head>
+        {% unicorn_scripts %}
+        <meta charset="utf-8">
+
+        <!-- Load d3.js -->
+
+
+        <!-- Flag sprites service provided by Martijn Lafeber, https://github.com/lafeber/world-flags-sprite/blob/master/LICENSE -->
+
+        <style>
+            /* Add some padding on document's body to prevent the content
+            to go underneath the header and footer */
+            body{
+                padding-top: 60px;
+                padding-bottom: 40px;
+            }
+            .fixed-header, .fixed-footer{
+                width: 100%;
+                position: fixed;
+                background: #00bfff;
+                padding: 10px 0;
+                color: #fff;
+            }
+            .fixed-header{
+                top: 0;
+            }
+            .fixed-footer{
+                bottom: 0;
+            }
+            .container{
+                width: 80%;
+                margin: 0 auto; /* Center the DIV horizontally */
+            }
+            nav a{
+                color: #fff;
+                text-decoration: none;
+                padding: 7px 25px;
+                display: inline-block;
+            }
+            .mystyle {
+                font-size: 11pt;
+                font-family: Arial;
+                border-collapse: collapse;
+                border: 1px solid silver;
+
+
+            }
+
+            .mystyle td, th {
+                padding: 5px;
+            }
+
+            .mystyle tr:nth-child(even) {
+                background: #E0E0E0;
+            }
+
+            .mystyle tr:hover {
+                background: silver;
+                cursor: pointer;
+            }
+        </style>
+
+    </head>
+    <body>
+        <div class="fixed-header">
+            <div class>
+                <nav>
+                    <a href="/"><span style="font-size: 40px;">Mapas en línea</span></a>
+
+                </nav>
+            </div>
+        </div>
+
+            {% block content %}
+
+            {% endblock %}
+
+
+        <br>
+
+
+    </body>

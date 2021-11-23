@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+ <div class="row">
+    <div class="col-lg-3" style="float: left;">
+          <div style="background-color: #00bfff;">
+                <span style="color: rgb(255, 255, 255); text-align: center;"><h2> Parametros de generación</h2></span>
+          </div>
+          <div>
+             <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                 <table>
+                {{ form.as_table }}
+                 </table>
+              <input type="submit" value="Generar">
+            </form>
+
+          </div>
+
+    </div>
+    <div class="col-lg-9" style="float: left;
+    width : 75%;text-align: center;";>
+        <h2 style="text-align: center;">Visualización de mapa</h2>
+        <img src = "{%   static 'output.svg' %}" alt="Mapa aún no disponible"/>
+        <div style="   margin: auto;
+   width: 50% !important;";>
+
+        </div>
+</div>
+{% endblock %}

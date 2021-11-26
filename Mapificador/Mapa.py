@@ -84,7 +84,7 @@ class Mapa:
         return self.colorBlanco
 
     def cargar_datos(self, ruta = os.path.join(os.getcwd(),'Datos_pruebas/datos_deptos.xlsx')):
-        self.datos = read_excel(ruta)
+        self.datos = read_excel(ruta, engine='openpyxl')
         self.datos.dropna(inplace=True)
         print(self.datos.columns)
 

@@ -22,7 +22,7 @@ def main():
 
 if __name__ == '__main__':
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Mapas.settings')
-    os.environ.setdefault('DJANGO_CONFIGURATION', 'Production')
+    os.environ.setdefault('DJANGO_CONFIGURATION', 'Develop')
 
     from configurations.management import execute_from_command_line
 

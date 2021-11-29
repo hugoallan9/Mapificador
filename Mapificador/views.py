@@ -70,6 +70,7 @@ def eleccionVariables(request, id):
 
 def graficar(request,id, x, y, paleta, tamanio):
     context = {}
+    nombre = ""
     mapa = None
     try:
         print("Cargando mapa")
@@ -129,8 +130,8 @@ def graficar(request,id, x, y, paleta, tamanio):
                                  form.cleaned_data.get('posyLeyenda'),
                                  titulo=form.cleaned_data.get('tituloLeyenda'))
             #Generación en svg
-            mapa.exportarMapa()
-            return render(request, 'graficar.html', {'form':form})
+            nombre = mapa.exportarMapa(ruta=os.path.join(settings.BASE_DIR, "Mapificador","static"))
+            return render(request, 'graficar.html', {'form':form, 'salida':os.path.join(nombre + '.svg')})
     else:
         if tamanio == '1':
             mapa.render()
@@ -148,7 +149,6 @@ def graficar(request,id, x, y, paleta, tamanio):
                                                })
 
     context['form'] = form
-    context['salida'] = os.path.join(settings.BASE_DIR,'output.svg')
     return render(request, 'graficar.html', context)
 
 

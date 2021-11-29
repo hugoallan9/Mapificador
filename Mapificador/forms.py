@@ -50,7 +50,7 @@ class parametrosMapaForm(forms.Form):
     letraItem = forms.IntegerField(required=True, label='Tamaña letra dimensión', min_value=8, max_value=74)
     tituloLeyenda =  forms.CharField(label= 'Título de leyenda', max_length=100, required=False)
     posxLeyenda = forms.FloatField(required=True, label='Posición x leyenda', min_value=0.01, max_value=50)
-    posyLeyenda = forms.FloatField(required=True, label='Posición x leyenda', min_value=0.01, max_value=50)
+    posyLeyenda = forms.FloatField(required=True, label='Posición y leyenda', min_value=0.01, max_value=50)
 
 class parametrosContinuo(parametrosMapaForm):
     numeroClases = forms.FloatField(required=True, label='Número de intervalos', min_value=1, max_value=6)

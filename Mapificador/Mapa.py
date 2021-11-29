@@ -1,6 +1,7 @@
 #from PyQt4.QtGui import *
 #from PyQt4.QtCore import *
 import math
+import uuid
 
 from qgis.utils import iface
 from PyQt5.QtGui import QColor, QFont
@@ -91,6 +92,16 @@ class Mapa:
     def columnasNumericas(self):
         columnas = self.datos.select_dtypes(include=np.number).columns.to_list()
         return columnas
+
+    def pintar_mapa_categorias(self, fieldName, color1, color2):
+        rampa = QgsGradientColorRamp(color1,color2,True)
+        render_categorizado = QgsCategorizedSymbolRenderer(fieldName)
+        #Haciendo la categorización de la variable
+        categorias = self.datos[fieldName].astype('category')
+        categoriasRender = []
+        for cat in categorias.cat.categories:
+            categoriasRender.append(cat,rampa)
+
 
     def pintar_mapa_intervalos(self,fieldName, color1 ,color2, numeroClases ,discreto = False):
         rampa = QgsGradientColorRamp(color1,color2,discreto)
@@ -252,12 +263,12 @@ class Mapa:
 
         #self.insertarLeyenda(self.layout, posx=self.posx, posy=self.posy)
 
-    def exportarMapa(self,formato = 'svg'):
+    def exportarMapa(self, ruta, formato = 'svg'):
+        nombre = str(uuid.uuid4())
 
-        base_path = os.path.join(QgsProject.instance().homePath())
-        pdfPath = os.path.join(base_path, 'Mapificador', 'static' , "output.pdf")
-        svgPath = os.path.join(base_path, 'Mapificador', 'static',"output.svg")
-        pngPath = os.path.join(base_path,'Mapificador', 'static', "output.png")
+        pdfPath = os.path.join(ruta, nombre + ".pdf")
+        svgPath = os.path.join(ruta,nombre+".svg")
+        pngPath = os.path.join(ruta, nombre +".png")
         #layout = manager.layoutByName(layoutName)
         exporter = QgsLayoutExporter(self.layout)
         if formato == "svg":
@@ -268,3 +279,4 @@ class Mapa:
             exporter.exportToImage(pngPath,QgsLayoutExporter.ImageExportSettings())
         #Limpiando el proyecto
         self.proyecto.clear()
+        return nombre

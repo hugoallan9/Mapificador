@@ -112,6 +112,11 @@ def graficar(request,id, x, y, paleta, tamanio):
                                             color1=mapa.getColor1(),
                                             color2=mapa.getColor2(),
                                             numeroClases=form.cleaned_data.get('numeroClases'))
+            elif paleta == '2':
+                mapa.pintar_mapa_categorias(fieldName='datos_'+y,
+                                            color1=mapa.getColor1(),
+                                            color2=mapa.getColor2()
+                                            )
                 #mapa.cambiarBorde(color="#808080", grosor=0.4)
             #Creando el render, necesario para tener el layout
             mapa.render()

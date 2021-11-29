@@ -12,7 +12,7 @@ class MapaDepartamental(Mapa):
 
     def cargar_shape(self, nombre = "Departamentos"):
         self.mapa = QgsVectorLayer(os.path.join(settings.BASE_DIR,'Mapificador',
-                                                'departamentos_gtm/departamentos_gtm.shp'), nombre, "ogr")
+                                                'departamentos_gtm','departamentos_gtm.shp'), nombre, "ogr")
         if not self.mapa.isValid():
             print("ERROR: El mapa no pudo ser cargado.")
         else:

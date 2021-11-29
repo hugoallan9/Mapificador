@@ -1,9 +1,5 @@
-asgiref==3.4.1
-beautifulsoup4==4.10.0
-cachetools==4.2.4
-decorator==4.4.2
-Django==3.2.9
-django-configurations==2.3.1
+Django
+django-configurations
 django-secrets==1.0.2
 django-unicorn==0.38.1
 future==0.18.2

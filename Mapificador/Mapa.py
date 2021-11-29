@@ -33,6 +33,7 @@ from qgis.core import (
     QgsLayoutItemPage,
     QgsLegendRenderer,
     QgsLegendStyle,
+    QgsRendererCategory,
  )
 from qgis.gui import (
     QgsMapCanvas,
@@ -97,11 +98,19 @@ class Mapa:
         rampa = QgsGradientColorRamp(color1,color2,True)
         render_categorizado = QgsCategorizedSymbolRenderer(fieldName)
         #Haciendo la categorización de la variable
-        categorias = self.datos[fieldName].astype('category')
+        fni = self.mapa.fields().indexFromName(fieldName)
+        categorias = self.mapa.uniqueValues(fni)
         categoriasRender = []
-        for cat in categorias.cat.categories:
-            categoriasRender.append(cat,rampa)
-
+        props = {'color_border': 'gray', 'style': 'solid', 'style_border': 'solid', 'width_border': '0.4'}
+        symbol = QgsFillSymbol.createSimple(props)
+        for cat in categorias:
+            categoriasRender.append(QgsRendererCategory(cat,symbol,str(cat)))
+        for cat in categoriasRender:
+            render_categorizado.addCategory(cat)
+        render_categorizado.updateColorRamp(rampa)
+        if render_categorizado is not None:
+            self.mapa.setRenderer(render_categorizado)
+            self.mapa.triggerRepaint()
 
     def pintar_mapa_intervalos(self,fieldName, color1 ,color2, numeroClases ,discreto = False):
         rampa = QgsGradientColorRamp(color1,color2,discreto)

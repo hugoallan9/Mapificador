@@ -34,6 +34,7 @@ from qgis.core import (
     QgsLegendRenderer,
     QgsLegendStyle,
     QgsRendererCategory,
+    QgsSymbol,
  )
 from qgis.gui import (
     QgsMapCanvas,
@@ -87,7 +88,8 @@ class Mapa:
 
     def cargar_datos(self, ruta = os.path.join(os.getcwd(),'Datos_pruebas/datos_deptos.xlsx')):
         self.datos = read_excel(ruta, engine='openpyxl')
-        self.datos.dropna(inplace=True)
+        #self.datos.dropna(inplace=True)
+        self.datos.fillna(0)
         print(self.datos.columns)
 
     def columnasNumericas(self):
@@ -96,35 +98,45 @@ class Mapa:
 
     def pintar_mapa_categorias(self, fieldName, color1, color2):
         rampa = QgsGradientColorRamp(color1,color2,True)
-        render_categorizado = QgsCategorizedSymbolRenderer(fieldName)
         #Haciendo la categorización de la variable
         fni = self.mapa.fields().indexFromName(fieldName)
         categorias = self.mapa.uniqueValues(fni)
         categoriasRender = []
-        props = {'color_border': 'gray', 'style': 'solid', 'style_border': 'solid', 'width_border': '0.4'}
-        symbol = QgsFillSymbol.createSimple(props)
         for cat in categorias:
+            symbol = QgsSymbol.defaultSymbol(self.mapa.geometryType())
             categoriasRender.append(QgsRendererCategory(cat,symbol,str(cat)))
-        for cat in categoriasRender:
-            render_categorizado.addCategory(cat)
+        render_categorizado = QgsCategorizedSymbolRenderer(fieldName, categoriasRender)
         render_categorizado.updateColorRamp(rampa)
         if render_categorizado is not None:
             self.mapa.setRenderer(render_categorizado)
             self.mapa.triggerRepaint()
 
+    def get_categories(self):
+        render = self.mapa.renderer()
+        return render.categories()
+
+    def update_labels_categories(self,valores, etiquetas):
+        render = self.mapa.renderer()
+        for i in range(len(valores)):
+            render.updateCategoryLabel(render.categoryIndexForValue(str(valores[i])), str(etiquetas[i]))
+
+
+
     def pintar_mapa_intervalos(self,fieldName, color1 ,color2, numeroClases ,discreto = False):
+        '''
+                #Crear el método de clasificación
+                clasificacion = QgsClassificationQuantile()
+                clasificacion.classes(self.mapa, fieldName,4)
+                #Creación de render
+                clas = clasificacion.classes(self.mapa, fieldName,numeroClases)
+                renderer = QgsGraduatedSymbolRenderer(fieldName)
+                renderer.setClassAttribute(fieldName)
+                renderer.setClassificationMethod(clasificacion)
+                renderer.updateColorRamp(rampa)
+                #props = {'color_border': 'black', 'style': 'solid', 'style_border': 'solid', 'width_border': '0.4'}
+                #symbol = QgsFillSymbol.createSimple(props)
+                '''
         rampa = QgsGradientColorRamp(color1,color2,discreto)
-        #Crear el método de clasificación
-        clasificacion = QgsClassificationQuantile()
-        clasificacion.classes(self.mapa, fieldName,4)
-        #Creación de render
-        clas = clasificacion.classes(self.mapa, fieldName,numeroClases)
-        renderer = QgsGraduatedSymbolRenderer(fieldName)
-        renderer.setClassAttribute(fieldName)
-        renderer.setClassificationMethod(clasificacion)
-        renderer.updateColorRamp(rampa)
-        #props = {'color_border': 'black', 'style': 'solid', 'style_border': 'solid', 'width_border': '0.4'}
-        #symbol = QgsFillSymbol.createSimple(props)
 
         symbol = self.mapa.renderer().symbol()
 

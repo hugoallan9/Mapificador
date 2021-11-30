@@ -1,15 +1,18 @@
 #Django imports
 import os.path
 
+import requests
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
-from .forms import UploadFileForm, escogerVariablesForm, parametrosContinuo
+from .forms import UploadFileForm, escogerVariablesForm, parametrosContinuo, parametrosDiscreto
 from django.conf import settings
 from .funciones import handleUploadedFile
 from .MapaDepartamental import MapaDepartamental
+from .MapaMunicipal import MapaMunicipal
+from .Mapa import Mapa
 
 #Model imports
-from .models import Mapa
+from .models import modeloMapa
 
 # Analisis
 import pandas as pd
@@ -40,17 +43,17 @@ def cargaExcel(request):
 
 def eleccionVariables(request, id):
     mapa = None
+    datosMapa = None
     pd.set_option('colheader_justify', 'center')
     try:
-        datosMapa = Mapa.objects.get(pk = id)
+        datosMapa = modeloMapa.objects.get(pk = id)
     except:
         pass
-    if datosMapa.tipo_mapa ==  '1':
-        mapa = MapaDepartamental()
-        mapa.cargar_datos(datosMapa.excel.path)
-        mapa.encontarDeptos()
-        xLista = [mapa.columnaDeptos]
-        yLista = mapa.columnasNumericas()
+    mapa = Mapa()
+    mapa.cargar_datos(ruta=datosMapa.excel.path)
+    xLista = mapa.columnasNumericas()
+    yLista = mapa.columnasNumericas()
+
 
 
     if request.method == "POST":
@@ -74,16 +77,19 @@ def graficar(request,id, x, y, paleta, tamanio):
     mapa = None
     try:
         print("Cargando mapa")
-        datosMapa = Mapa.objects.get(pk = id)
+        datosMapa = modeloMapa.objects.get(pk = id)
     except:
         pass
 
     if datosMapa.tipo_mapa ==  '1':
         mapa = MapaDepartamental()
-        mapa.proyecto.clear()
-        mapa.cargar_shape()
-        mapa.cargar_datos(datosMapa.excel.path)
-        mapa.crear_layer_datos(x,y)
+    else:
+        mapa = MapaMunicipal()
+
+    mapa.proyecto.clear()
+    mapa.cargar_shape()
+    mapa.cargar_datos(datosMapa.excel.path)
+    mapa.crear_layer_datos(x, y)
 
     mapa.join(x)
 
@@ -91,7 +97,10 @@ def graficar(request,id, x, y, paleta, tamanio):
 
 
     if request.method == "POST":
-        form = parametrosContinuo(request.POST)
+        if paleta == '1':
+            form = parametrosContinuo(request.POST)
+        else:
+            form = parametrosDiscreto(request.POST)
         if form.is_valid():
             try:
                 print('El número de layers es:', mapa.proyecto.count())
@@ -117,6 +126,12 @@ def graficar(request,id, x, y, paleta, tamanio):
                                             color1=mapa.getColor1(),
                                             color2=mapa.getColor2()
                                             )
+                # updating labels for categorized maps
+
+                categorias = mapa.get_categories()
+                mapa.update_labels_categories(valores=[cat.value() for cat in categorias],
+                                              etiquetas=[
+                                                  request.POST.get('cat_%d'%i) for i in range(len(categorias))])
                 #mapa.cambiarBorde(color="#808080", grosor=0.4)
             #Creando el render, necesario para tener el layout
             mapa.render()
@@ -134,24 +149,58 @@ def graficar(request,id, x, y, paleta, tamanio):
             mapa.insertarLeyenda(mapa.layout, form.cleaned_data.get('posxLeyenda'),
                                  form.cleaned_data.get('posyLeyenda'),
                                  titulo=form.cleaned_data.get('tituloLeyenda'))
+
             #Generación en svg
             nombre = mapa.exportarMapa(ruta=os.path.join(settings.BASE_DIR, "Mapificador","static"))
+            if paleta == '1':
+                form = parametrosContinuo(request.POST)
+            else:
+                categorias = mapa.get_categories()
+                form = parametrosDiscreto(request.POST,
+                                          numero_categorias=len(categorias),
+                                          valores =[cat.value() for cat in categorias],
+                                          etiquetas=[request.POST.get("cat_%d" %i) for i in range(len(categorias))])
             return render(request, 'graficar.html', {'form':form, 'salida':os.path.join(nombre + '.svg')})
     else:
-        if tamanio == '1':
-            mapa.render()
-            mapa.cambiarTamHoja(mapa.layout)
-            form = parametrosContinuo(initial={'ancho': 11, 'alto':8.5,
-                                               'color1': mapa.colorBlanco.name(),
-                                               'color2': mapa.colorCyan.name(),
-                                               'letraTitulo': mapa.tamLetra,
-                                               'letraLeyenda': mapa.tamLetraTitulo,
-                                               'letraMapa': mapa.tamLetraMapa,
-                                               'letraItem': mapa.tamLetraItem,
-                                               'posxLeyenda': mapa.posx,
-                                               'posyLeyenda': mapa.posy,
-                                               'numeroClases': 4,
-                                               })
+        if paleta == '1':
+            if tamanio == '1':
+                mapa.render()
+                mapa.cambiarTamHoja(mapa.layout)
+                form = parametrosContinuo(initial={'ancho': 11, 'alto':8.5,
+                                                   'color1': mapa.colorBlanco.name(),
+                                                   'color2': mapa.colorCyan.name(),
+                                                   'letraTitulo': mapa.tamLetra,
+                                                   'letraLeyenda': mapa.tamLetraTitulo,
+                                                   'letraMapa': mapa.tamLetraMapa,
+                                                   'letraItem': mapa.tamLetraItem,
+                                                   'posxLeyenda': mapa.posx,
+                                                   'posyLeyenda': mapa.posy,
+                                                   'numeroClases': 4,
+                                                   })
+        elif paleta == '2':
+            if tamanio == '1':
+                mapa.pintar_mapa_categorias(fieldName='datos_'+y,
+                                            color1=mapa.getColor1(),
+                                            color2=mapa.getColor2()
+                                            )
+                mapa.render()
+                mapa.cambiarTamHoja(mapa.layout)
+                categorias = mapa.get_categories()
+                form = parametrosDiscreto(
+                numero_categorias=len(categorias),
+                                          valores =[cat.value() for cat in categorias],
+                                          etiquetas=[cat.label() for cat in categorias],
+                    initial={'ancho': 11, 'alto': 8.5,
+                             'color1': mapa.colorBlanco.name(),
+                             'color2': mapa.colorCyan.name(),
+                             'letraTitulo': mapa.tamLetra,
+                             'letraLeyenda': mapa.tamLetraTitulo,
+                             'letraMapa': mapa.tamLetraMapa,
+                             'letraItem': mapa.tamLetraItem,
+                             'posxLeyenda': mapa.posx,
+                             'posyLeyenda': mapa.posy,
+                             },
+                )
 
     context['form'] = form
     return render(request, 'graficar.html', context)

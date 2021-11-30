@@ -2,7 +2,7 @@ from django.db import models
 import os
 # Create your models here.
 
-class Mapa(models.Model):
+class modeloMapa(models.Model):
     TIPO_MAPA = (
         ('1', 'Departamental' ),
         ('2', 'Municipal'),

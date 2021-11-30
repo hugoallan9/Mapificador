@@ -54,3 +54,20 @@ class parametrosMapaForm(forms.Form):
 
 class parametrosContinuo(parametrosMapaForm):
     numeroClases = forms.FloatField(required=True, label='Número de intervalos', min_value=1, max_value=6)
+
+class parametrosDiscreto(parametrosMapaForm):
+    def __init__(self, *args, **kargs):
+        numeroCategorias, valores, etiquetas = None, None, None
+        try:
+            numeroCategorias = kargs.pop('numero_categorias')
+            valores = kargs.pop('valores')
+            etiquetas = kargs.pop('etiquetas')
+        except:
+            pass
+        super(parametrosDiscreto,self).__init__(*args, **kargs)
+        if numeroCategorias:
+            for i in range(numeroCategorias):
+                self.fields["cat_%d"%i] = forms.CharField(
+                    label="Etiqueta para valor {}".format(valores[i]), initial= etiquetas[i] )
+
+

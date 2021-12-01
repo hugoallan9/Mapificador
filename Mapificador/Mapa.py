@@ -48,8 +48,8 @@ class Mapa:
     def __init__(self):
         self.mapa = None
         self.columnaDeptos = None
-        self.qgs = QgsApplication([],True)
-        self.qgs.initQgis()
+        self.qgs = QgsApplication([],False)
+        QgsApplication.initQgis()
         self.proyecto = QgsProject().instance()
         self.colorCyan = QColor(0,174,239,255)
         self.colorBlanco = QColor(255,255,255,255)

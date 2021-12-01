@@ -90,7 +90,6 @@ class Mapa:
         self.datos = read_excel(ruta, engine='openpyxl')
         #self.datos.dropna(inplace=True)
         self.datos.fillna(0)
-        print(self.datos.columns)
 
     def columnasNumericas(self):
         columnas = self.datos.select_dtypes(include=np.number).columns.to_list()

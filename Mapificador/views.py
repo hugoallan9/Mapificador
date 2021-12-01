@@ -160,6 +160,7 @@ def graficar(request,id, x, y, paleta, tamanio):
                                           numero_categorias=len(categorias),
                                           valores =[cat.value() for cat in categorias],
                                           etiquetas=[request.POST.get("cat_%d" %i) for i in range(len(categorias))])
+            mapa.qgs.exit()
             return render(request, 'graficar.html', {'form':form, 'salida':os.path.join(nombre + '.svg')})
     else:
         if paleta == '1':

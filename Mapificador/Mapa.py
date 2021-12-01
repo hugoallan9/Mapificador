@@ -298,7 +298,7 @@ class Mapa:
         elif formato == "png":
             exporter.exportToImage(pngPath,QgsLayoutExporter.ImageExportSettings())
         #Limpiando el proyecto
-        self.proyecto.clear()
+        #self.proyecto.clear()
         #self.qgs.exit()
         return nombre
 

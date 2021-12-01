@@ -54,7 +54,7 @@ def eleccionVariables(request, id):
     mapa.cargar_datos(ruta=datosMapa.excel.path)
     xLista = mapa.columnasNumericas()
     yLista = mapa.columnasNumericas()
-    mapa.qgs.exit()
+    mapa.qgs.exitQgis()
 
 
 
@@ -162,8 +162,7 @@ def graficar(request,id, x, y, paleta, tamanio):
                                           numero_categorias=len(categorias),
                                           valores =[cat.value() for cat in categorias],
                                           etiquetas=[request.POST.get("cat_%d" %i) for i in range(len(categorias))])
-            mapa.qgs.exit()
-            time.sleep(10)
+            mapa.qgs.exitQgis()
             return render(request, 'graficar.html', {'form':form, 'salida':os.path.join(nombre + '.svg')})
     else:
         if paleta == '1':

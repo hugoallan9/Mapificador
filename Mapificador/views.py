@@ -53,6 +53,7 @@ def eleccionVariables(request, id):
     mapa.cargar_datos(ruta=datosMapa.excel.path)
     xLista = mapa.columnasNumericas()
     yLista = mapa.columnasNumericas()
+    mapa.qgs.exit()
 
 
 

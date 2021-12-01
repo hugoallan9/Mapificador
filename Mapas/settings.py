@@ -157,7 +157,7 @@ class Base(Configuration):
 
 class Develop(Base):
     DEBUG = True
-    ALLOWED_HOSTS = ["104.131.96.205"]
+    ALLOWED_HOSTS = ["localhost","104.131.96.205"]
 
 class Production(Base):
     DEBUG = False

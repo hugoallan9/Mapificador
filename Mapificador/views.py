@@ -24,9 +24,9 @@ datos = None
 
 
 
-def indexPage(request):
+def login(request):
     context = {'a':'a'}
-    return render(request, 'home.html', context)
+    return render(request, 'login.html', context)
 
 def cargaExcel(request):
     context = {}
@@ -39,7 +39,7 @@ def cargaExcel(request):
         form = UploadFileForm()
         archivoCargado = False
     context['form'] = form
-    return render(request, 'cargaExcel.html', context)
+    return render(request, 'index.html', context)
 
 def eleccionVariables(request, id):
     mapa = None

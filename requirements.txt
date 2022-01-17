@@ -1,5 +1,5 @@
-Django
-django-configurations
+Django==3.2
+django-configurations==2.3.1
 django-secrets==1.0.2
 django-unicorn==0.38.1
 future==0.18.2
@@ -13,3 +13,6 @@ six==1.16.0
 soupsieve==2.3.1
 sqlparse==0.4.2
 uuid
+requests
+fontawesomefree
+

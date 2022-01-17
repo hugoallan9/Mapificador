@@ -49,6 +49,7 @@ class Base(Configuration):
         #Utilities
         'django_unicorn',
         'django_secrets',
+        'fontawesomefree',
         #My apss
         'Mapificador',
     ]
@@ -134,9 +135,7 @@ class Base(Configuration):
 
     STATIC_URL = '/static/'
 
-    STATICFILES_DIRS = [
-        BASE_DIR / "static",
-    ]
+    STATIC_ROOT = BASE_DIR / 'static/'
 
 
 

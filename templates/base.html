@@ -1,84 +1,70 @@
-{% load unicorn %}
-<html>
-    <head>
-        {% unicorn_scripts %}
-        <meta charset="utf-8">
+<!DOCTYPE html>
+<html lang="es">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="keywords" content="tailwind,tailwindcss,tailwind css,css,starter template,free template,admin templates, admin template, admin dashboard, free tailwind templates, tailwind example">
+    <!-- Css -->
+    <link rel="stylesheet" type="text/css"  href="{% static 'css/styles.css'  %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/all.css'%} >
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i,700,700i" rel="stylesheet">
+    <script src="{% static 'fontawesomefree/js/all.js' %}"></script>
+    {% block head_content %}    {% endblock %}
+</head>
 
-        <!-- Load d3.js -->
-
-
-        <!-- Flag sprites service provided by Martijn Lafeber, https://github.com/lafeber/world-flags-sprite/blob/master/LICENSE -->
-
-        <style>
-            /* Add some padding on document's body to prevent the content
-            to go underneath the header and footer */
-            body{
-                padding-top: 60px;
-                padding-bottom: 40px;
-            }
-            .fixed-header, .fixed-footer{
-                width: 100%;
-                position: fixed;
-                background: #00bfff;
-                padding: 10px 0;
-                color: #fff;
-            }
-            .fixed-header{
-                top: 0;
-            }
-            .fixed-footer{
-                bottom: 0;
-            }
-            .container{
-                width: 80%;
-                margin: 0 auto; /* Center the DIV horizontally */
-            }
-            nav a{
-                color: #fff;
-                text-decoration: none;
-                padding: 7px 25px;
-                display: inline-block;
-            }
-            .mystyle {
-                font-size: 11pt;
-                font-family: Arial;
-                border-collapse: collapse;
-                border: 1px solid silver;
-
-
-            }
-
-            .mystyle td, th {
-                padding: 5px;
-            }
-
-            .mystyle tr:nth-child(even) {
-                background: #E0E0E0;
-            }
-
-            .mystyle tr:hover {
-                background: silver;
-                cursor: pointer;
-            }
-        </style>
-
-    </head>
-    <body>
-        <div class="fixed-header">
-            <div class>
-                <nav>
-                    <a href="/"><span style="font-size: 40px;">Mapas en línea</span></a>
-
-                </nav>
+<body>
+<!--Container -->
+<div class="mx-auto bg-grey-400">
+    <!--Screen-->
+    <div class="min-h-screen flex flex-col">
+        <!--Header Section Starts Here-->
+        <header class="bg-nav">
+            <div class="flex justify-between">
+                <div class="p-1 mx-3 inline-flex items-center">
+                    <i class="fab fa-wpforms pr-2 text-white" onclick="sidebarToggle()"></i>
+                    <h1 class="text-white p-2">Mapificador</h1>
+                </div>
+                <div class="p-1 flex flex-row items-center">
+                    <a href="https://github.com/tailwindadmin/admin" class="text-white p-2 mr-2 no-underline hidden md:block lg:block">Github</a>
+                    <img onclick="profileToggle()" class="inline-block h-8 w-8 rounded-full" src="https://avatars0.githubusercontent.com/u/4323180?s=460&v=4" alt="">
+                    <a href="#" onclick="profileToggle()" class="text-white p-2 no-underline hidden md:block lg:block">Adam Wathan</a>
+                    <div id="ProfileDropDown" class="rounded hidden shadow-md bg-white absolute pin-t mt-12 mr-1 pin-r">
+                        <ul class="list-reset">
+                          <li><a href="#" class="no-underline px-4 py-2 block text-black hover:bg-grey-light">My account</a></li>
+                          <li><a href="#" class="no-underline px-4 py-2 block text-black hover:bg-grey-light">Notifications</a></li>
+                          <li><hr class="border-t mx-2 border-grey-ligght"></li>
+                          <li><a href="#" class="no-underline px-4 py-2 block text-black hover:bg-grey-light">Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
+        </header>
+        <!--/Header-->
+
+        <div class="flex flex-1">
+            <!--Sidebar-->
+            <aside id="sidebar" class="bg-side-nav w-1/2 md:w-1/6 lg:w-1/6 border-r border-side-nav hidden md:block lg:block">
+                {% block sidebar %} {% endblock %}
+            </aside>
+            <!--/Sidebar-->
+            <!--Main-->
+            {% block main_content %} {% endblock %}
+
+            <!--/Main-->
         </div>
+        <!--Footer-->
+        <footer class="bg-grey-darkest text-white p-2">
+            <div class="flex flex-1 mx-auto">&copy; My Design</div>
+            <div class="flex flex-1 mx-auto">Distributed by:  <a href="https://themewagon.com/" target=" _blank">Themewagon</a></div>
+        </footer>
+        <!--/footer-->
 
-            {% block content %}
+    </div>
 
-            {% endblock %}
+</div>
+<script src="{% static 'jss/main.jss' %}></script>
+</body>
 
-
-        <br>
-
-
-    </body>
+</html>

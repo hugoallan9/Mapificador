@@ -8,4 +8,7 @@ venv/
 .idea
 staticfiles/
 static/
+!static/css
+!static/jss
+!static/images
 

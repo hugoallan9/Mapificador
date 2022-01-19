@@ -39,7 +39,7 @@ def cargaExcel(request):
         form = UploadFileForm()
         archivoCargado = False
     context['form'] = form
-    return render(request, 'index.html', context)
+    return render(request, 'forms.html', context)
 
 def eleccionVariables(request, id):
     mapa = None

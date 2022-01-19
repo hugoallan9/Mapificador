@@ -3,7 +3,9 @@ from django import forms
 
 class UploadFileForm(forms.Form):
     CHOICES=[('1', 'Departamental'),('2','Municipal')]
-    file = forms.FileField()
+    file = forms.FileField(widget= forms.ClearableFileInput( attrs={'class':
+                                       'bg-blue-500 hover:bg-blue-800 text-white font-bold '
+                                       'py-2 px-4 rounded-full'}))
     tipo_de_mapa = forms.ChoiceField(widget=forms.RadioSelect, choices=CHOICES)
 
 class escogerVariablesForm(forms.Form):

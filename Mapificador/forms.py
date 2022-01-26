@@ -41,16 +41,35 @@ class escogerVariablesForm(forms.Form):
     tamanio = forms.CharField(label = 'Tamaño del mapa', widget=forms.Select(choices=tamanios))
 
 class parametrosMapaForm(forms.Form):
-    titulo = forms.CharField(label= 'Título del mapa', max_length=100, required=False)
-    ancho = forms.FloatField(required=True, min_value=1, max_value=50)
-    alto = forms.FloatField(required=True, min_value=1, max_value=50)
+    titulo = forms.CharField(label= 'Título del mapa', max_length=100, required=False,
+                             widget=forms.TextInput(attrs={'class': 'bg-grey-200 appearance-none border-1 ' \
+                                                                    'border-grey-200 rounded w-full py-2 px-4 ' \
+                                                                    'text-grey-darker leading-tight focus:outline-none ' \
+                                                                    'focus:bg-white focus:border-purple-light'})
+                             )
+    ancho = forms.FloatField(required=True, min_value=1, max_value=50,
+                             widget=forms.TextInput(attrs={'class':'bg-grey-200 appearance-none border-1 ' \
+                                                                   'border-grey-200 rounded w-full py-2 px-4 ' \
+                                                                   'text-grey-darker leading-tight focus:outline-none ' \
+                                                                   'focus:bg-white focus:border-purple-light'}))
+    alto = forms.FloatField(required=True, min_value=1, max_value=50,
+                            widget=forms.TextInput(attrs={'class': 'bg-grey-200 appearance-none border-1 ' \
+                                                                   'border-grey-200 rounded w-full py-2 px-4 ' \
+                                                                   'text-grey-darker leading-tight focus:outline-none ' \
+                                                                   'focus:bg-white focus:border-purple-light'})
+                            )
     color1 = forms.CharField(required=True, label='Color valores bajos', widget=forms.TextInput(attrs={'type': 'color'}))
     color2 = forms.CharField(required=True, label='Color valores altos', widget=forms.TextInput(attrs={'type':'color'}) )
     letraTitulo = forms.IntegerField(required=True, label='Tamaño letra título', min_value=8, max_value=74)
     letraLeyenda = forms.IntegerField(required=True, label='Tamaño letra leyenda',min_value=8, max_value=74)
     letraMapa = forms.IntegerField(required=True, label='Tamaña letra dimensión', min_value=8, max_value=74)
-    letraItem = forms.IntegerField(required=True, label='Tamaña letra dimensión', min_value=8, max_value=74)
-    tituloLeyenda =  forms.CharField(label= 'Título de leyenda', max_length=100, required=False)
+    letraItem = forms.IntegerField(required=True, label='Tamaña letra etiqueta', min_value=8, max_value=74)
+    tituloLeyenda = forms.CharField(label= 'Título de leyenda', max_length=100, required=False,
+                                    widget=forms.TextInput(attrs={'class': 'bg-grey-200 appearance-none border-1 ' \
+                                                                           'border-grey-200 rounded w-full py-2 px-4 ' \
+                                                                           'text-grey-darker leading-tight focus:outline-none ' \
+                                                                           'focus:bg-white focus:border-purple-light'})
+                                    )
     posxLeyenda = forms.FloatField(required=True, label='Posición x leyenda', min_value=0.01, max_value=50)
     posyLeyenda = forms.FloatField(required=True, label='Posición y leyenda', min_value=0.01, max_value=50)
 
@@ -70,6 +89,11 @@ class parametrosDiscreto(parametrosMapaForm):
         if numeroCategorias:
             for i in range(numeroCategorias):
                 self.fields["cat_%d"%i] = forms.CharField(
-                    label="Etiqueta para valor {}".format(valores[i]), initial= etiquetas[i] )
+                    label="Etiqueta para valor {}".format(valores[i]), initial= etiquetas[i],
+                    widget=forms.TextInput(attrs={'class': 'bg-grey-200 appearance-none border-1 ' \
+                                                           'border-grey-200 rounded w-full py-2 px-4 ' \
+                                                           'text-grey-darker leading-tight focus:outline-none ' \
+                                                           'focus:bg-white focus:border-purple-light'})
+                )
 
 

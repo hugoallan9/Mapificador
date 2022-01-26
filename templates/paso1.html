@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block header_content %}
+<title> Mapificador - Cargar excel </title>
+{% endblock %}
+
+
+{% block main_content %}
+    <main class="bg-white-500 flex-1 p-3 overflow-hidden">
+        <div class="flex flex-col">
+            <!--Grid Form-->
+            <div class="flex flex-1  flex-col md:flex-row lg:flex-row mx-2">
+                <div class="mb-2 border-solid border-gray-300 rounded border shadow-sm w-full">
+                    <div class="bg-gray-200 px-2 py-3 border-solid border-gray-200 border-b">
+                        Carga archivo excel
+                    </div>
+                    <div class="p-3">
+                        <form class="w-full" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {{ form.non_field_errors }}
+                            <div class="flex flex-wrap -mx-3 mb-6">
+                                <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                                    {{ form.file.errors }}
+                                    <label class="block uppercase tracking-wide text-gray-700 text-xs font-light mb-1"
+                                           for="{{ form.file.id_for_label }}">
+                                        Archivo
+                                    </label>
+                                    {{ form.file }}
+                                </div>
+                                <div class="w-full md:w-1/2 px-3">
+                                    {{ form.tipo_de_mapa.errors }}
+                                    <label class="block uppercase tracking-wide text-gray-700 text-xs font-light mb-1"
+                                           for="{{ form.tipo_de_mapa.id_for_label }}">
+                                        Tipo de mapa a generar
+                                    </label>
+                                    {{ form.tipo_de_mapa }}
+                                </div>
+                            </div>
+                            <div class="flex justify-center">
+                                <div class="flex justify-center">
+                                    <input class="lex-shrink-0 bg-teal-500 hover:bg-teal-dark-700 border-teal-500
+                                     hover:border-teal-dark text-sm border-4 text-white py-1 px-2 rounded"
+                                           type="submit" value="Cargar">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!--/Grid Form-->
+        </div>
+    </main>
+{% endblock %}
+
+{% block sidebar %}
+    <ul class="list-reset flex flex-col">
+        <li class="w-full h-full py-3 px-2 border-b border-light-border">
+            <a href="forms.html"
+               class="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
+                <i class="fab fa-wpforms float-left mx-2"></i>
+                Paso 1
+                <span><i class="fa fa-angle-right float-right"></i></span>
+            </a>
+        </li>
+
+            </ul>
+        </li>
+    </ul>
+{% endblock %}

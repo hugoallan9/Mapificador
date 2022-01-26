@@ -1,0 +1,274 @@
+{% extends 'base.html' %}
+
+{% block header_content %}
+<title> Mapificador - Parámetros de generación </title>
+{% endblock %}
+
+
+
+
+{% block sidebar %}
+    <ul class="list-reset flex flex-col">
+        <li class="w-full h-full py-3 px-2 border-b border-light-border">
+            <a href="paso1"
+               class="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
+                <i class="fab fa-wpforms float-left mx-2"></i>
+                Paso 1
+                <span><i class="fa fa-angle-right float-right"></i></span>
+            </a>
+        </li>
+        <li class="w-full h-full py-3 px-2 border-b border-light-border">
+            <a href="paso2"
+               class="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
+                <i class="fab fa-wpforms float-left mx-2"></i>
+                Paso 2
+                <span><i class="fa fa-angle-right float-right"></i></span>
+            </a>
+        </li>
+            <li class="w-full h-full py-3 px-2 border-b border-light-border">
+            <a href="paso3"
+               class="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
+                <i class="fab fa-wpforms float-left mx-2"></i>
+                Paso 3
+                <span><i class="fa fa-angle-right float-right"></i></span>
+            </a>
+        </li>
+
+            </ul>
+        </li>
+    </ul>
+{% endblock %}
+
+
+{% block main_content %}
+    <main class="bg-white-500 flex-1 p-3 overflow-hidden">
+        <div class="flex flex-col">
+            <form method="post" enctype="multipart/form-data">
+                <div class="flex flex-1  flex-col md:flex-row lg:flex-row mx-2">
+                <!--Aspectos del mapa form-->
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                    <div class="mb-2 border-solid border-grey-light rounded border shadow-sm w-full md:w-1/2 lg:w-1/2">
+                        <div class="bg-gray-300 px-2 py-3 border-solid border-gray-400 border-b">
+                            Aspectos del mapa
+                        </div>
+                        <div class="p-3">
+                                <div class="md:flex md:items-center mb-6">
+                                    <div class="md:w-1/4">
+                                        {{ form.titulo.errors }}
+                                        <label class="block text-gray-500 font-regular md:text-right mb-1 md:mb-0 pr-4"
+                                               for="{{  form.titulo.id_for_label }}">
+                                            {{form.titulo.label_tag}}
+                                        </label>
+                                    </div>
+                                    <div class="md:w-3/4">
+                                        {{ form.titulo }}
+                                    </div>
+                                </div>
+                                <div class="md:flex md:items-center mb-6">
+                                    <div class="md:w-1/4">
+                                        {{ form.letraTitulo.errors }}
+                                        <label class="block text-grey font-regular md:text-right mb-1 md:mb-0 pr-4"
+                                               for="{{ form.color1.id_for_label }}">
+                                            {{ form.letraTitulo.label_tag }}
+                                        </label>
+                                    </div>
+                                    <div class="md:w-3/4">
+                                        {{ form.letraTitulo }}
+                                    </div>
+                                </div>
+                                <div class="md:flex md:items-center mb-6">
+                                    <div class="md:w-1/4">
+                                        {{ form.ancho.errors }}
+                                        <label class="block text-grey font-regular md:text-right mb-1 md:mb-0 pr-4"
+                                               for="{{ form.ancho.id_for_label }}">
+                                            {{ form.ancho.label_tag }}
+                                        </label>
+                                    </div>
+                                    <div class="md:w-3/4">
+                                        {{ form.ancho }}
+                                    </div>
+                                </div>
+                                <div class="md:flex md:items-center mb-6">
+                                    <div class="md:w-1/4">
+                                        {{ form.alto.errors }}
+                                        <label class="block text-grey font-regular md:text-right mb-1 md:mb-0 pr-4"
+                                               for="{{ form.alto.id_for_label }}">
+                                            {{ form.ancho.label_tag }}
+                                        </label>
+                                    </div>
+                                    <div class="md:w-3/4">
+                                        {{ form.alto }}
+                                    </div>
+                                </div>
+                                <div class="md:flex md:items-center mb-6">
+                                    <div class="md:w-1/4">
+                                        {{ form.color1.errors }}
+                                        <label class="block text-grey font-regular md:text-right mb-1 md:mb-0 pr-4"
+                                               for="{{ form.color1.id_for_label }}">
+                                            {{ form.color1.label_tag }}
+                                        </label>
+                                    </div>
+                                    <div class="md:w-3/4">
+                                        {{ form.color1 }}
+                                    </div>
+                                </div>
+                                <div class="md:flex md:items-center mb-6">
+                                    <div class="md:w-1/4">
+                                        {{ form.color2.errors }}
+                                        <label class="block text-grey font-regular md:text-right mb-1 md:mb-0 pr-4"
+                                               for="{{ form.color2.id_for_label }}">
+                                            {{ form.color2.label_tag }}
+                                        </label>
+                                    </div>
+                                    <div class="md:w-3/4">
+                                        {{ form.color2 }}
+                                    </div>
+                                </div>
+
+                        </div>
+                    </div>
+                <!--/Horizontal form-->
+
+                    <!--Aspecto de Leyenda form-->
+                    <div class="mb-2 md:mx-2 lg:mx-2 border-solid border-gray-200 rounded border shadow-sm w-full md:w-1/2 lg:w-1/2">
+                        <div class="bg-gray-200 px-2 py-3 border-solid border-gray-200 border-b">
+                            Aspectos de la leyenda
+                        </div>
+                        <div class="p-3">
+                                <div class="md:flex md:items-center mb-6">
+                                    <div class="md:w-1/4">
+                                        {{ form.tituloLeyenda.errors }}
+                                        <label class="block text-grey font-regular md:text-right mb-1 md:mb-0 pr-4"
+                                               for="{{ form.tituloLeyenda.id_for_label }}">
+                                            {{ form.tituloLeyenda.label_tag }}
+                                        </label>
+                                    </div>
+                                    <div class="md:w-3/4">
+                                        {{ form.tituloLeyenda }}
+                                    </div>
+                                </div>
+                                <div class="md:flex md:items-center mb-6">
+                                    <div class="md:w-1/4">
+                                        {{ form.letraLeyenda.errors }}
+                                        <label class="block text-grey font-regular md:text-right mb-1 md:mb-0 pr-4"
+                                               for="{{ form.letraLeyenda.id_for_label }}">
+                                            {{ form.letraLeyenda.label_tag }}
+                                        </label>
+                                    </div>
+                                    <div class="md:w-3/4">
+                                        {{ form.letraLeyenda }}
+                                    </div>
+                                </div>
+                                <div class="md:flex md:items-center mb-6">
+                                    <div class="md:w-1/4">
+                                        {{ form.letraItem.errors }}
+                                        <label class="block text-grey font-regular md:text-right mb-1 md:mb-0 pr-4"
+                                               for="{{ form.letraItem.id_for_label }}">
+                                            {{ form.letraItem.label_tag }}
+                                        </label>
+                                    </div>
+                                    <div class="md:w-3/4">
+                                        {{ form.letraItem }}
+                                    </div>
+                                </div>
+                                <div class="md:flex md:items-center mb-6">
+                                    <div class="md:w-1/4">
+                                        {{ form.posxLeyenda.errors }}
+                                        <label class="block text-grey font-regular md:text-right mb-1 md:mb-0 pr-4"
+                                               for="{{ form.posxLeyenda.id_for_label }}">
+                                            {{ form.posxLeyenda.label_tag }}
+                                        </label>
+                                    </div>
+                                    <div class="md:w-3/4">
+                                        {{ form.posxLeyenda }}
+                                    </div>
+                                </div>
+                                <div class="md:flex md:items-center mb-6">
+                                    <div class="md:w-1/4">
+                                        {{ form.posyLeyenda.errors }}
+                                        <label class="block text-grey font-regular md:text-right mb-1 md:mb-0 pr-4"
+                                               for="{{ form.posyLeyenda.id_for_label }}">
+                                            {{ form.posyLeyenda.label_tag }}
+                                        </label>
+                                    </div>
+                                    <div class="md:w-3/4">
+                                        {{ form.posyLeyenda }}
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-1  flex-col md:flex-row lg:flex-row mx-2">
+                <!--Detalles continuo o discreto form-->
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                    <div class="mb-2 border-solid border-grey-light rounded border shadow-sm w-full md:w-1/2 lg:w-1/2">
+                        <div class="bg-gray-300 px-2 py-3 border-solid border-gray-400 border-b">
+                            {% if tipo_mapa == "1" %}
+                                Clases en leyenda
+                            {% else %}
+                                Nombres de leyendas
+                            {% endif %}
+                        </div>
+                        <div class="p-3">
+                            {% if tipo_mapa == "1" %}
+                                <div class="md:flex md:items-center mb-6">
+                                    <div class="md:w-1/4">
+                                        {{ form.numeroClases.errors }}
+                                        <label class="block text-gray-500 font-regular md:text-right mb-1 md:mb-0 pr-4"
+                                               for="{{  form.numeroClases.id_for_label }}">
+                                            {{form.numeroClases.label_tag}}
+                                        </label>
+                                    </div>
+                                    <div class="md:w-3/4">
+                                        {{ form.numeroClases }}
+                                    </div>
+                                </div>
+                            {% else %}
+                                {% for field in form %}
+                                    {% if field.html_name in "cat_0,cat_1,cat_2,cat_3,cat_4,cat_5,cat_6" %}
+                                        <div class="md:flex md:items-center mb-6">
+                                            <div class="md:w-1/4">
+                                                {{ field.errors }}
+                                                <label class="block text-gray-500 font-regular md:text-right mb-1 md:mb-0 pr-4"
+                                                       for="{{  field.id_for_label }}">
+                                                    {{field.label_tag}}
+                                                </label>
+                                            </div>
+                                            <div class="md:w-3/4">
+                                                {{ field }}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                <!--/Horizontal form-->
+
+                    <!--Aspecto de Leyenda form-->
+                    <div class="mb-2 md:mx-2 lg:mx-2 border-solid border-gray-200 rounded border shadow-sm w-full md:w-1/2 lg:w-1/2">
+                        <div class="bg-gray-200 px-2 py-3 border-solid border-gray-200 border-b">
+                            Departamentos priorizados
+                        </div>
+                        <div class="p-3">
+
+                        </div>
+                    </div>
+                </div>
+                                <div class="md:flex md:items-center">
+                                    <div class="md:w-1/2"></div>
+                                    <div class="md:w-2/3">
+                                        <input class="shadow bg-purple-500 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
+                                            type="submit" value="Previsualizar">
+                                    </div>
+                                </div>
+
+            </form>
+        </div>
+
+    </main>
+{% endblock %}

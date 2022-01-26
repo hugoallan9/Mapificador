@@ -39,7 +39,7 @@ def cargaExcel(request):
         form = UploadFileForm()
         archivoCargado = False
     context['form'] = form
-    return render(request, 'forms.html', context)
+    return render(request, 'paso1.html', context)
 
 def eleccionVariables(request, id):
     mapa = None
@@ -71,7 +71,7 @@ def eleccionVariables(request, id):
         'form': form,
     }
     mapa.qgs.exit()
-    return render(request, 'eleccionVariables.html', context)
+    return render(request, 'paso2.html', context)
 
 def graficar(request,id, x, y, paleta, tamanio):
     context = {}
@@ -163,7 +163,10 @@ def graficar(request,id, x, y, paleta, tamanio):
                                           valores =[cat.value() for cat in categorias],
                                           etiquetas=[request.POST.get("cat_%d" %i) for i in range(len(categorias))])
             mapa.qgs.exit()
-            return render(request, 'graficar.html', {'form':form, 'salida':os.path.join(nombre + '.svg')})
+            print(nombre)
+            return render(request, 'paso3.html', {'form':form,
+                                                  'tipo_mapa' : paleta,
+                                                  'salida':os.path.join(nombre + '.svg')})
     else:
         if paleta == '1':
             if tamanio == '1':
@@ -206,6 +209,7 @@ def graficar(request,id, x, y, paleta, tamanio):
                 )
 
     context['form'] = form
-    return render(request, 'graficar.html', context)
+    context['tipo_mapa'] = paleta
+    return render(request, 'paso3.html', context)
 
 

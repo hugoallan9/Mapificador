@@ -1,15 +1,16 @@
 #Django imports
+import mimetypes
 import os.path
 
-import requests
 from django.shortcuts import render
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from .forms import UploadFileForm, escogerVariablesForm, parametrosContinuo, parametrosDiscreto
 from django.conf import settings
 from .funciones import handleUploadedFile
-from .MapaDepartamental import MapaDepartamental
-from .MapaMunicipal import MapaMunicipal
-from .Mapa import Mapa
+from Mapa.MapaDepartamental import MapaDepartamental
+from Mapa.MapaMunicipal import MapaMunicipal
+from Mapa.mapaClase import Mapa
+from Mapa.Tests.main_test_thread import *
 
 #Model imports
 from .models import modeloMapa
@@ -18,8 +19,7 @@ from .models import modeloMapa
 import pandas as pd
 
 #Utilities
-import time
-
+import uuid
 datos = None
 
 
@@ -70,6 +70,7 @@ def eleccionVariables(request, id):
         'excel': mapa.datos.to_html(classes='mystyle'),
         'form': form,
     }
+    mapa.proyecto.removeAllMapLayers()
     mapa.qgs.exit()
     return render(request, 'paso2.html', context)
 
@@ -77,6 +78,7 @@ def graficar(request,id, x, y, paleta, tamanio):
     context = {}
     nombre = ""
     mapa = None
+    datosMapa = None
     try:
         print("Cargando mapa")
         datosMapa = modeloMapa.objects.get(pk = id)
@@ -85,11 +87,14 @@ def graficar(request,id, x, y, paleta, tamanio):
 
     if datosMapa.tipo_mapa ==  '1':
         mapa = MapaDepartamental()
+        #mapa.proyecto.clear()
+        mapa.cargar_shape(os.path.join(settings.BASE_DIR, 'Mapa', 'departamentos_gtm', 'departamentos_gtm.shp'))
     else:
         mapa = MapaMunicipal()
+        mapa.proyecto.clear()
+        mapa.cargar_shape(os.path.join(settings.BASE_DIR, 'Mapa', 'departamentos_gtm', 'departamentos_gtm.shp'))
 
-    mapa.proyecto.clear()
-    mapa.cargar_shape()
+
     mapa.cargar_datos(datosMapa.excel.path)
     mapa.crear_layer_datos(x, y)
 
@@ -134,7 +139,7 @@ def graficar(request,id, x, y, paleta, tamanio):
                 mapa.update_labels_categories(valores=[cat.value() for cat in categorias],
                                               etiquetas=[
                                                   request.POST.get('cat_%d'%i) for i in range(len(categorias))])
-                #mapa.cambiarBorde(color="#808080", grosor=0.4)
+                mapa.cambiarBorde(color="#808080", grosor=0.4)
             #Creando el render, necesario para tener el layout
             mapa.render()
             #Cambiando tamaño de hoja
@@ -143,17 +148,20 @@ def graficar(request,id, x, y, paleta, tamanio):
             #Cargando el mapa al render
             titulo = form.cleaned_data.get('titulo')
             mapa.anadirMapaRender( titulo != '')
-
+            mapa.exportarMapa('/home/hugog/prueba', formato="pdf")
             #Poniendo titulo
             if titulo != '':
                 mapa.insertarTitulo(mapa.layout,titulo)
             #Insertando leyenda
-            mapa.insertarLeyenda(mapa.layout, form.cleaned_data.get('posxLeyenda'),
-                                 form.cleaned_data.get('posyLeyenda'),
+            mapa.insertarLeyenda(posx=form.cleaned_data.get('posxLeyenda'),
+                                 posy=form.cleaned_data.get('posyLeyenda'),
                                  titulo=form.cleaned_data.get('tituloLeyenda'))
 
             #Generación en svg
-            nombre = mapa.exportarMapa(ruta=os.path.join(settings.BASE_DIR, "Mapificador","static"))
+            nombre = str(uuid.uuid4())
+            mapa.exportarMapa('/home/hugog/pruebaejecucion', formato="pdf")
+            mapa.exportarMapa(ruta=os.path.join(settings.BASE_DIR,"static","Salidas", nombre))
+            mapa.exportarMapaPruebas()
             if paleta == '1':
                 form = parametrosContinuo(request.POST)
             else:
@@ -162,11 +170,16 @@ def graficar(request,id, x, y, paleta, tamanio):
                                           numero_categorias=len(categorias),
                                           valores =[cat.value() for cat in categorias],
                                           etiquetas=[request.POST.get("cat_%d" %i) for i in range(len(categorias))])
+            mapa.proyecto.write("/home/hugog/prueba.qgs")
+            mapa.exportarMapaPruebas()
+            mapa.proyecto.clear()
+            #mapa.proyecto.removeAllMapLayers()
             mapa.qgs.exit()
+            del mapa
             print(nombre)
             return render(request, 'paso3.html', {'form':form,
                                                   'tipo_mapa' : paleta,
-                                                  'salida':os.path.join(nombre + '.svg')})
+                                                  'salida':nombre })
     else:
         if paleta == '1':
             if tamanio == '1':
@@ -207,9 +220,23 @@ def graficar(request,id, x, y, paleta, tamanio):
                              'posyLeyenda': mapa.posy,
                              },
                 )
-
+    #mapa.proyecto.removeAllMapLayers()
+    mapa.proyecto.clear()
+    mapa.removerLayers()
+    mapa = None
     context['form'] = form
     context['tipo_mapa'] = paleta
     return render(request, 'paso3.html', context)
 
+
+def download_file(request, filename=''):
+    if filename != '':
+        filepath = os.path.join(settings.BASE_DIR,'static', 'Salidas', filename)
+        path = open(filepath, 'rb')
+        mime_type = mimetypes.guess_type(filepath)
+        response = HttpResponse(path, content_type=mime_type)
+        # Set the HTTP header for sending to browser
+        response['Content-Disposition'] = "attachment; filename=%s" % filename
+        # Return the response value
+        return response
 

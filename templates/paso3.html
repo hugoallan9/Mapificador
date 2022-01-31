@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block header_content %}
 <title> Mapificador - Parámetros de generación </title>
 {% endblock %}
@@ -162,6 +162,18 @@
                                 </div>
                                 <div class="md:flex md:items-center mb-6">
                                     <div class="md:w-1/4">
+                                        {{ form.letraMapa.errors }}
+                                        <label class="block text-grey font-regular md:text-right mb-1 md:mb-0 pr-4"
+                                               for="{{ form.letraMapa.id_for_label }}">
+                                            {{ form.letraMapa.label_tag }}
+                                        </label>
+                                    </div>
+                                    <div class="md:w-3/4">
+                                        {{ form.letraMapa }}
+                                    </div>
+                                </div>
+                                <div class="md:flex md:items-center mb-6">
+                                    <div class="md:w-1/4">
                                         {{ form.letraItem.errors }}
                                         <label class="block text-grey font-regular md:text-right mb-1 md:mb-0 pr-4"
                                                for="{{ form.letraItem.id_for_label }}">
@@ -268,7 +280,43 @@
                                 </div>
 
             </form>
+        <br>
+        <br>
+            <div class="bg-gray-300 px-2 py-3 border-solid border-gray-400 border-b">
+                        Imagen previa
+            </div>
+            <img src = "{% static "" %}Salidas/{{ salida|add:'.svg' }}" alt="Mapa aún no disponible"/>
+        {% if salida %}
+            </div>
+        <div class="flex flex-1  flex-col md:flex-row lg:flex-row mx-12">
+            <div class="md:w-4/12">
+                <div class="flex justify-center">
+                    <a href="{% url 'downloadfile' salida|add:'.pdf' %}">
+                        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                        type="submit" value="Download">
+                            PDF
+                        </button>
+                    </a>
+                </div>
+             </div>
+            <div class="md:w-4/12">
+                <div class="flex justify-center">
+                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        SVG
+                    </button>
+                </div>
+             </div>
+            <div class="md:w-4/12">
+                <div class="flex justify-center">
+                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        PNG
+                    </button>
+                </div>
+             </div>
         </div>
+        {% endif %}
+
+</div>
 
     </main>
 {% endblock %}

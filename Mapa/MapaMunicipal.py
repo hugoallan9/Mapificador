@@ -1,6 +1,6 @@
 import os.path
 from django.conf import settings
-from .Mapa import Mapa
+from .mapaClase import Mapa
 from qgis.core import QgsVectorLayer, QgsField, QgsFeature, QgsVectorLayerJoinInfo
 from PyQt5.QtCore import QVariant
 
@@ -11,8 +11,8 @@ class MapaMunicipal(Mapa):
         super().__init__()
 
     def cargar_shape(self, nombre = "Departamentos"):
-        self.mapa = QgsVectorLayer(os.path.join(settings.BASE_DIR,'Mapificador',
-                                                'municipios_gtm','municipios_GTM.shp'), nombre, "ogr")
+        self.mapa = QgsVectorLayer(os.path.join(settings.BASE_DIR,'Mapa',
+                                                'municipios_gtm', 'municipios_GTM.shp')  , nombre, "ogr")
         if not self.mapa.isValid():
             print("ERROR: El mapa no pudo ser cargado.")
         else:

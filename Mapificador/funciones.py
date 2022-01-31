@@ -1,4 +1,3 @@
-from .MapaDepartamental import  MapaDepartamental
 from .models import modeloMapa
 
 def handleUploadedFile(archivo, opcion):

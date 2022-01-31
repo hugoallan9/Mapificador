@@ -1,6 +1,5 @@
 from unittest import TestCase
-from .Mapa import Mapa
-from .MapaDepartamental import  MapaDepartamental
+from Mapa.MapaDepartamental import  MapaDepartamental
 
 import os
 class TestMapa(TestCase):

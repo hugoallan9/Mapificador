@@ -1,6 +1,6 @@
 import os.path
 from django.conf import settings
-from .Mapa import Mapa
+from .mapaClase import Mapa
 from qgis.core import QgsVectorLayer, QgsField, QgsFeature, QgsVectorLayerJoinInfo
 from PyQt5.QtCore import QVariant
 
@@ -10,14 +10,7 @@ class MapaDepartamental(Mapa):
     def __init__(self):
         super().__init__()
 
-    def cargar_shape(self, nombre = "Departamentos"):
-        self.mapa = QgsVectorLayer(os.path.join(settings.BASE_DIR,'Mapificador',
-                                                'departamentos_gtm','departamentos_gtm.shp'), nombre, "ogr")
-        if not self.mapa.isValid():
-            print("ERROR: El mapa no pudo ser cargado.")
-        else:
-            self.IdMapa = self.mapa.id()
-            self.proyecto.instance().addMapLayer(self.mapa)
+
 
     def encontarDeptos(self):
         for column in self.datos:
@@ -48,6 +41,9 @@ class MapaDepartamental(Mapa):
         #Empaquetando todo
         temp.commitChanges()
         self.IdDatos = temp.id()
+        self.temp = temp
+        for feature in temp.getFeatures():
+            print(feature[0],feature[1])
         #Agregar el layer al proyecto
         self.proyecto.instance().addMapLayer(temp)
 

@@ -90,44 +90,62 @@ class Mapa:
     def getColor2(self):
         return self.colorBlanco
 
+
+
     def cargar_shape(self, ruta, nombre = "Departamentos"):
-        self.mapa = QgsVectorLayer(ruta, nombre, "ogr")
-        if not self.mapa.isValid():
-            print("ERROR: El mapa no pudo ser cargado.")
+        self.mapa = None
+        if len(self.proyecto.mapLayers().values()) > 0:
+            for layer in self.proyecto.mapLayers().values():
+                if layer.name() == nombre:
+                    self.mapa = layer
+                    break
+                else:
+                    self.mapa = QgsVectorLayer(ruta, nombre, "ogr")
+                    if self.mapa.isValid():
+                        self.proyecto.addMapLayer(self.mapa)
+                    else:
+                        print("Error al cargar el mapa")
         else:
-            self.IdMapa = self.mapa.id()
-            self.proyecto.instance().addMapLayer(self.mapa)
+            self.mapa = QgsVectorLayer(ruta, nombre, "ogr")
+            if self.mapa.isValid():
+                self.proyecto.addMapLayer(self.mapa)
+            else:
+                print("Error al cargar el mapa")
 
-    def cargar_datos(self, ruta = os.path.join(os.getcwd(),'Datos_pruebas/datos_deptos.xlsx')):
-        self.datos = read_excel(ruta, engine='openpyxl')
+
+    @staticmethod
+    def cargar_datos(ruta):
+        datos = read_excel(ruta, engine='openpyxl')
         #self.datos.dropna(inplace=True)
-        self.datos.fillna(0)
+        datos.fillna(0)
+        return datos
 
-    def columnasNumericas(self):
-        columnas = self.datos.select_dtypes(include=np.number).columns.to_list()
+    @staticmethod
+    def columnasNumericas(datos):
+        columnas = datos.select_dtypes(include=np.number).columns.to_list()
         return columnas
 
-    def pintar_mapa_categorias(self, fieldName, color1, color2):
+    def pintar_mapa_categorias(self, fieldName, color1, color2, mapa):
         rampa = QgsGradientColorRamp(color1,color2,True)
         #Haciendo la categorización de la variable
-        fni = self.mapa.fields().indexFromName(fieldName)
-        categorias = self.mapa.uniqueValues(fni)
+        fni = mapa.fields().indexFromName(fieldName)
+        categorias = mapa.uniqueValues(fni)
         categoriasRender = []
         for cat in categorias:
-            symbol = QgsSymbol.defaultSymbol(self.mapa.geometryType())
+            symbol = QgsSymbol.defaultSymbol(mapa.geometryType())
             categoriasRender.append(QgsRendererCategory(cat,symbol,str(cat)))
         render_categorizado = QgsCategorizedSymbolRenderer(fieldName, categoriasRender)
         render_categorizado.updateColorRamp(rampa)
         if render_categorizado is not None:
-            self.mapa.setRenderer(render_categorizado)
-            self.mapa.triggerRepaint()
+            mapa.setRenderer(render_categorizado)
+            mapa.triggerRepaint()
 
-    def get_categories(self):
-        render = self.mapa.renderer()
+    def get_categories(self, mapa):
+        render = mapa.renderer()
         return render.categories()
 
-    def update_labels_categories(self,valores, etiquetas):
-        render = self.mapa.renderer()
+    def update_labels_categories(self,valores, etiquetas, mapa):
+        render = mapa.renderer()
         for cat in render.categories():
             print("Before {}: {} :: {}".format(cat.value(), cat.label(), cat.symbol()))
         for i in range(len(valores)):
@@ -136,7 +154,7 @@ class Mapa:
             print("Update {}: {} :: {}".format(cat.value(), cat.label(), cat.symbol()))
 
 
-    def pintar_mapa_intervalos(self,fieldName, color1 ,color2, numeroClases ,discreto = False):
+    def pintar_mapa_intervalos(self,fieldName, color1 ,color2, numeroClases):
         '''
                 #Crear el método de clasificación
                 clasificacion = QgsClassificationQuantile()
@@ -158,18 +176,18 @@ class Mapa:
                                                              fieldName, numeroClases, QgsGraduatedSymbolRenderer.Quantile, symbol, rampa)
         self.mapa.setRenderer(renderer)
 
-    def cambiarBorde(self, color = 'white', grosor = 0.3):
+    def cambiarBorde(self, mapa, color = 'white', grosor = 0.3):
         props = {'color_border': color, 'style': 'solid', 'style_border': 'solid', 'width_border': grosor}
         symbol = QgsFillSymbol.createSimple(props)
-        self.mapa.renderer().updateSymbols(symbol)
+        mapa.renderer().updateSymbols(symbol)
 
 
 
 
 
-    def exportarMapaPruebas(self):
+    def exportarMapaPruebas(self, mapa):
         image_location = os.path.join('/home/hugog/', "render1.png")
-        vlayer = self.mapa
+        vlayer = mapa
         settings = QgsMapSettings()
         settings.setLayers([vlayer])
         settings.setBackgroundColor(QColor(255, 255, 255))
@@ -224,11 +242,11 @@ class Mapa:
 
     def insertarTitulo(self, layout, titulo):
         label = None
-        if self.layout.itemById('labelTitulo') == None:
+        if layout.itemById('labelTitulo') == None:
             label = QgsLayoutItemLabel(layout)
             label.setId('labelTitulo')
         else:
-            label = self.layout.itemById('labelTitulo')
+            label = layout.itemById('labelTitulo')
         label.setText(titulo)
         #math.floor(72 * self.paperHeight * 1 / 10 * 0.5)
         fuente = QFont("Arial", self.tamLetra)
@@ -239,16 +257,15 @@ class Mapa:
             QgsLayoutPoint(self.paperWidth / 2 - (tamTexto.width() / 2) * 0.0394, 0.01, QgsUnitTypes.LayoutInches))
         layout.addLayoutItem(label)
 
-    def insertarLeyenda(self, posx , posy,titulo = "Leyenda"):
+    def insertarLeyenda(self, posx , posy, layout, titulo = "Leyenda"):
         legend = None
-        print("Los items en la página antes de leyenda son", self.layout.pageCollection().itemsOnPage(0))
-        if self.layout.itemById('leyenda') == None:
-            legend = QgsLayoutItemLegend(self.layout)
-            legend.setLinkedMap(self.mapa_visual)
+        print("Los items en la página antes de leyenda son", layout.pageCollection().itemsOnPage(0))
+        if layout.itemById('leyenda') == None:
+            legend = QgsLayoutItemLegend(layout)
             legend.setId('leyenda')
         else:
             print("Se remueve la leyenda")
-            legend = self.layout.itemById('leyenda')
+            legend = layout.itemById('leyenda')
 
 
         legend.attemptMove(QgsLayoutPoint(posx, posy,
@@ -266,61 +283,52 @@ class Mapa:
         legend.setStyleFont(QgsLegendStyle.Title, QFont("Arial", self.tamLetraTitulo))
         legend.setStyleFont(QgsLegendStyle.Subgroup, QFont("Arial", self.tamLetraMapa))
         legend.setStyleFont(QgsLegendStyle.SymbolLabel, QFont("Arial", self.tamLetraItem))
-        self.layout.addLayoutItem(legend)
-        print("Los items en la página despuès de leyenda", self.layout.pageCollection().itemsOnPage(0))
-        print("Los layers cargados son: ", self.proyecto.mapLayers().values())
-        layers_names = []
-        for layer in self.proyecto.mapLayers().values():
-            layers_names.append(layer.name())
-            print(layer.id())
+        layout.addLayoutItem(legend)
+        print("Los items en la página despuès de leyenda", layout.pageCollection().itemsOnPage(0))
 
-        print("layers TOC = {}".format(layers_names))
-    def anadirMapaRender(self, is_there_title = True):
+
+    def anadirMapaRender(self, layout, mapa, is_there_title = True):
         # Añadiendo mapa
-        print("Los items en la página antes del mapa son", self.layout.pageCollection().itemsOnPage(0))
+        print("Los items en la página antes del mapa son", layout.pageCollection().itemsOnPage(0))
+        mapa_visual = QgsLayoutItemMap(layout)
         if is_there_title:
-            self.mapa_visual = QgsLayoutItemMap(self.layout)
-            self.mapa_visual.attemptMove(QgsLayoutPoint(self.paperWidth / 20, self.paperHeight * 2 / 20, QgsUnitTypes.LayoutInches))
-            self.mapa_visual.attemptResize(QgsLayoutSize(self.paperHeight * 17 / 20, self.paperWidth, QgsUnitTypes.LayoutInches))
-            self.mapa_visual.setExtent(self.mapa.extent())
+            mapa_visual.attemptMove(QgsLayoutPoint(self.paperWidth / 20, self.paperHeight * 2 / 20, QgsUnitTypes.LayoutInches))
+            mapa_visual.attemptResize(QgsLayoutSize(self.paperHeight * 17 / 20, self.paperWidth, QgsUnitTypes.LayoutInches))
+            mapa_visual.setExtent(self.mapa.extent())
         else:
-            self.mapa_visual = QgsLayoutItemMap(self.layout)
-            self.mapa_visual.attemptMove(QgsLayoutPoint(self.paperWidth/100, self.paperHeight /100, QgsUnitTypes.LayoutInches))
-            self.mapa_visual.attemptResize(QgsLayoutSize(self.paperHeight * 0.94, self.paperWidth , QgsUnitTypes.LayoutInches))
-            self.mapa_visual.setExtent(self.mapa.extent())
-        print("El extent es:", self.mapa.extent())
-        self.layout.addLayoutItem(self.mapa_visual)
-        print("Los items en la página son", self.layout.pageCollection().itemsOnPage(0))
-        print("Los items en el layout son:")
-        print(self.layout.items())
-        for item in self.layout.items():
-            if isinstance(item, QgsLayoutItemMap):
-                print(item.displayName())
+            mapa_visual.attemptMove(QgsLayoutPoint(self.paperWidth/100, self.paperHeight /100, QgsUnitTypes.LayoutInches))
+            mapa_visual.attemptResize(QgsLayoutSize(self.paperHeight * 0.94, self.paperWidth , QgsUnitTypes.LayoutInches))
+            mapa_visual.setExtent(self.mapa.extent())
+        print("El extent es:", mapa.extent())
+        layout.addLayoutItem(mapa_visual)
+        print("Los items en el layout después de agregar el mapa", layout.items())
 
 
     def render(self):
-        self.manager = self.proyecto.layoutManager()
+        manager = self.proyecto.layoutManager()
         layoutName = "UNICEF"
-        layouts_list = self.manager.layouts()
+        layouts_list = manager.layouts()
         # remove any duplicate layouts
-        for layout in layouts_list:
-            if layout.name() == layoutName:
-                self.manager.removeLayout(layout)
-        self.layout = QgsPrintLayout(self.proyecto)
-        self.layout.initializeDefaults()
-        self.layout.setName(layoutName)
-        self.manager.addLayout(self.layout)
-        print("El proyecto asociado es:", self.layout.project())
+        for lay in layouts_list:
+            if lay.name() == layoutName:
+                manager.removeLayout(lay)
+        layout = QgsPrintLayout(self.proyecto).clone()
+        layout.initializeDefaults()
+        layout.setName(layoutName)
+        manager.addLayout(layout)
+        print("Los items en el layout son:", layout.items())
+        print("El proyecto asociado es:", layout.project())
+        return layout
 
 
 
 
-    def exportarMapa(self, ruta, formato = ""):
+    def exportarMapa(self, layout, ruta, formato = ""):
         pdfPath = ruta + ".pdf"
         svgPath = ruta + ".svg"
         pngPath = ruta +".png"
         #layout = manager.layoutByName(layoutName)
-        exporter = QgsLayoutExporter(self.layout)
+        exporter = QgsLayoutExporter(layout)
         if formato == "svg":
             exporter.exportToSvg(svgPath, QgsLayoutExporter.SvgExportSettings())
         elif formato == "pdf":
@@ -336,12 +344,15 @@ class Mapa:
         #self.proyecto.clear()
         #self.qgs.exit()
 
+
     def removerLayers(self):
-        """
-        root = self.proyecto.layerTreeRoot()
-        root.removeLayer(self.mapa)
-        root.removeLayer(self.temp)
-        """
         root = self.proyecto.layerTreeRoot()
         for child in root.children():
             print("Estoy presente en el proyecto", child.name())
+
+
+    def removeLayers(self,layerName):
+        for layer in self.proyecto.mapLayers().values():
+            if layer.name()==layerName:
+                print("Eliminando el layer", layerName)
+                QgsProject.instance().removeMapLayers( [layer.id()] )

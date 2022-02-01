@@ -18,9 +18,13 @@ class MapaDepartamental(Mapa):
                 self.columnaDeptos = column
                 break
 
+    def crear_layer_datos2(self,datos,x,y):
+        uri = 'file:///home/hugog/datos_deptos.csv?delimiter=,'
+        csvLayer = QgsVectorLayer(uri,"result", "delimitedText")
+        return csvLayer
 
 
-    def crear_layer_datos(self, x,y):
+    def crear_layer_datos(self, datos, x,y):
         temp = QgsVectorLayer("none","result","memory")
         temp_data = temp.dataProvider()
         #Inicio de la edición
@@ -33,28 +37,31 @@ class MapaDepartamental(Mapa):
         temp.updateFields()
 
         #Agregando los features
-        for row in self.datos.loc[:,[x,y]].itertuples():
+        for row in datos.loc[:,[x,y]].itertuples():
             f = QgsFeature()
             f.setAttributes([row[1],row[2]])
             temp.addFeature(f)
 
         #Empaquetando todo
         temp.commitChanges()
-        self.IdDatos = temp.id()
-        self.temp = temp
+        IdDatos = temp.id()
         for feature in temp.getFeatures():
             print(feature[0],feature[1])
         #Agregar el layer al proyecto
-        self.proyecto.instance().addMapLayer(temp)
+        return temp
 
 
-    def join(self,x):
+    def join(self,mapa, datos, x):
+        for field in mapa.fields():
+            print(field.name())
         info = QgsVectorLayerJoinInfo()
         info.setJoinFieldName(x)
-        info.setJoinLayerId(self.IdDatos)
-        info.setJoinLayer(self.proyecto.instance().mapLayer(self.IdDatos))
+        info.setJoinLayerId(datos.id())
+        info.setJoinLayer(self.proyecto.mapLayer(datos.id()))
         info.setTargetFieldName("departamen")
         info.setPrefix("datos_")
-        self.proyecto.instance().mapLayer(self.IdMapa).addJoin(info)
+        self.proyecto.mapLayer(mapa.id()).addJoin(info)
         self.mapa.updateFields()
-        print('Los joins son', self.mapa.vectorJoins())
+        print('Los joins son', mapa.vectorJoins())
+        for field in mapa.fields():
+            print(field.name())

@@ -11,12 +11,14 @@ from Mapa.MapaDepartamental import MapaDepartamental
 from Mapa.MapaMunicipal import MapaMunicipal
 from Mapa.mapaClase import Mapa
 from Mapa.Tests.main_test_thread import *
+from Mapa.Tests.main_test import main
 
 #Model imports
 from .models import modeloMapa
 
 # Analisis
 import pandas as pd
+import random
 
 #Utilities
 import uuid
@@ -44,18 +46,17 @@ def cargaExcel(request):
 def eleccionVariables(request, id):
     mapa = None
     datosMapa = None
+    variables = ["Educación","Política","Wash"]
+    #hiloMapa(y = random.choices(variables)[0]).start()
+    main(variables)
     pd.set_option('colheader_justify', 'center')
     try:
         datosMapa = modeloMapa.objects.get(pk = id)
     except:
         pass
-    mapa = Mapa()
-    mapa.cargar_datos(ruta=datosMapa.excel.path)
-    xLista = mapa.columnasNumericas()
-    yLista = mapa.columnasNumericas()
-
-
-
+    datos = Mapa.cargar_datos(ruta=datosMapa.excel.path)
+    xLista = Mapa.columnasNumericas(datos)
+    yLista = Mapa.columnasNumericas(datos)
 
     if request.method == "POST":
         x = request.POST['codigos']
@@ -67,11 +68,9 @@ def eleccionVariables(request, id):
         form = escogerVariablesForm(x = [(i,i) for i in xLista], y = [(j,j) for j in yLista])
 
     context = {
-        'excel': mapa.datos.to_html(classes='mystyle'),
+        'excel': datos.to_html(classes='mystyle'),
         'form': form,
     }
-    mapa.proyecto.removeAllMapLayers()
-    mapa.qgs.exit()
     return render(request, 'paso2.html', context)
 
 def graficar(request,id, x, y, paleta, tamanio):

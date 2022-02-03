@@ -90,6 +90,43 @@ class Mapa:
     def getColor2(self):
         return self.colorBlanco
 
+    @staticmethod
+    def getPaperHeight():
+        return 8.5
+
+    @staticmethod
+    def getPaperWidth():
+        return 11
+
+    @staticmethod
+    def getTamLetra():
+        return 24
+
+    @staticmethod
+    def getTamLetraTitulo():
+        return 20
+
+    @staticmethod
+    def getTamLetraMapa():
+        return 16
+
+    @staticmethod
+    def getTamLetraLeyenda():
+        return 14
+
+    @staticmethod
+    def getTamLetraItem():
+        12
+
+    @staticmethod
+    def getColorBlanco():
+        return QColor(255,255,255,255).name()
+
+    @staticmethod
+    def getColorCyan():
+        return QColor(0,174,239,255).name()
+
+
 
 
     def cargar_shape(self, ruta, nombre = "Departamentos"):

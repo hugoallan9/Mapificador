@@ -86,14 +86,45 @@ def graficar(request,id, x, y, paleta, tamanio):
         if form.is_valid():
             color1 = form.cleaned_data.get('color1')
             color2 = form.cleaned_data.get('color2')
+            letra_mapa = form.cleaned_data.get('letraMapa')
+            letra_titulo = form.cleaned_data.get('letraTitulo')
+            letra_leyenda = form.cleaned_data.get('letraLeyenda')
+            titulo = form.cleaned_data.get('titulo')
+            titulo_leyenda = form.cleaned_data.get('tituloLeyenda')
+            letra_item = form.cleaned_data.get('letraItem')
+            posx = form.cleaned_data.get('posxLeyenda')
+            posy = form.cleaned_data.get('posyLeyenda')
             if paleta == '1':
                 pass
             elif paleta == '2':
+                ruta_mapa = ""
+                if datosMapa.tipo_mapa == '1':
+                    ruta_mapa = os.path.join(settings.BASE_DIR, 'Mapa', 'departamentos_gtm',
+                                             'departamentos_gtm.shp')
+                else:
+                    ruta_mapa = os.path.join(settings.BASE_DIR, 'Mapa', 'municipios_gtm',
+                                             'municipios_gtm.shp')
                 datos = Mapa.cargar_datos(datosMapa.excel.path)
                 longitud = len(datos[y].unique())
                 etiquetas_nuevas = [request.POST.get('cat_%d' % i) for i in range(longitud)]
                 categorias = mapa_categorias(
-                    tipo= datosMapa.tipo_mapa
+                    tipo= datosMapa.tipo_mapa,
+                    ruta_mapa=ruta_mapa,
+                    ruta_excel=datosMapa.excel.path,
+                    variable_union=x,
+                    variable_pintar=y,
+                    tam_letra_mapa= letra_mapa,
+                    titulo=titulo,
+                    tam_letra_titulo=letra_titulo,
+                    titulo_leyenda=titulo_leyenda,
+                    tam_letra_leyenda=letra_leyenda,
+                    posx_leyenda=posx,
+                    posy_leyenda=posy,
+                    labels_items=etiquetas_nuevas,
+                    tam_letra_item=letra_item,
+                    colores_bajos=color1,
+                    colores_altos=color2,
+                    ruta_exportacion = os.path.join(settings.BASE_DIR,'static', 'Salidas', nombre)
                 )
                 # updating labels for categorized maps
 

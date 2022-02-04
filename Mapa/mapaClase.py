@@ -223,7 +223,7 @@ class Mapa:
 
 
     def exportarMapaPruebas(self, mapa):
-        image_location = os.path.join('/home/hugog/', "render1.png")
+        image_location = os.path.join('/home/hugo/', "render1.png")
         vlayer = mapa
         settings = QgsMapSettings()
         settings.setLayers([vlayer])

@@ -1,11 +1,7 @@
 {% extends 'base.html' %}
-{% load static %}
 {% block header_content %}
 <title> Mapificador - Parámetros de generación </title>
 {% endblock %}
-
-
-
 
 {% block sidebar %}
     <ul class="list-reset flex flex-col">
@@ -285,7 +281,7 @@
             <div class="bg-gray-300 px-2 py-3 border-solid border-gray-400 border-b">
                         Imagen previa
             </div>
-            <img src = "{% static "" %}Salidas/{{ salida|add:'.svg' }}" alt="Mapa aún no disponible"/>
+             <img src = "{{ media|add:"/Salida/" }}{{nombre|add:'.svg'}}" alt="Mapa aún no disponible"/>
         {% if salida %}
             </div>
         <div class="flex flex-1  flex-col md:flex-row lg:flex-row mx-12">

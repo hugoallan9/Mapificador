@@ -86,14 +86,16 @@ def graficar(request,id, x, y, paleta, tamanio):
         if form.is_valid():
             color1 = form.cleaned_data.get('color1')
             color2 = form.cleaned_data.get('color2')
+            titulo = form.cleaned_data.get('titulo')
             letra_mapa = form.cleaned_data.get('letraMapa')
             letra_titulo = form.cleaned_data.get('letraTitulo')
-            letra_leyenda = form.cleaned_data.get('letraLeyenda')
-            titulo = form.cleaned_data.get('titulo')
             titulo_leyenda = form.cleaned_data.get('tituloLeyenda')
-            letra_item = form.cleaned_data.get('letraItem')
+            letra_leyenda = form.cleaned_data.get('letraLeyenda')
             posx = form.cleaned_data.get('posxLeyenda')
             posy = form.cleaned_data.get('posyLeyenda')
+            letra_item = form.cleaned_data.get('letraItem')
+            colores_bajos = form.cleaned_data.get('color1')
+            colores_altos = form.cleaned_data.get('color2')
             if paleta == '1':
                 pass
             elif paleta == '2':
@@ -107,24 +109,29 @@ def graficar(request,id, x, y, paleta, tamanio):
                 datos = Mapa.cargar_datos(datosMapa.excel.path)
                 longitud = len(datos[y].unique())
                 etiquetas_nuevas = [request.POST.get('cat_%d' % i) for i in range(longitud)]
+                ruta = ""
+                if datosMapa.tipo_mapa == '1':
+                    ruta = os.path.join(settings.BASE_DIR, 'Mapa/departamentos_gtm/departamentos_gtm.shp')
+                else:
+                    ruta = os.path.join(settings.BASE_DIR, 'Mapa/municipios_gtm/municipios_gtm.shp')
                 categorias = mapa_categorias(
                     tipo= datosMapa.tipo_mapa,
-                    ruta_mapa=ruta_mapa,
-                    ruta_excel=datosMapa.excel.path,
-                    variable_union=x,
-                    variable_pintar=y,
-                    tam_letra_mapa= letra_mapa,
-                    titulo=titulo,
-                    tam_letra_titulo=letra_titulo,
-                    titulo_leyenda=titulo_leyenda,
+                    ruta_mapa = ruta,
+                    ruta_excel = datosMapa.excel.path,
+                    variable_union = x,
+                    variable_pintar = y,
+                    tam_letra_mapa = letra_mapa,
+                    titulo = titulo,
+                    tam_letra_titulo = letra_titulo,
+                    titulo_leyenda =titulo_leyenda,
                     tam_letra_leyenda=letra_leyenda,
-                    posx_leyenda=posx,
-                    posy_leyenda=posy,
-                    labels_items=etiquetas_nuevas,
-                    tam_letra_item=letra_item,
-                    colores_bajos=color1,
-                    colores_altos=color2,
-                    ruta_exportacion = os.path.join(settings.BASE_DIR,'static', 'Salidas', nombre)
+                    posx_leyenda = posx,
+                    posy_leyenda = posy,
+                    labels_items = etiquetas_nuevas,
+                    tam_letra_item = letra_item,
+                    colores_bajos = colores_bajos,
+                    colores_altos = colores_altos,
+                    ruta_exportacion = os.path.join(settings.BASE_DIR,settings.MEDIA_ROOT,'Salidas', nombre)
                 )
                 # updating labels for categorized maps
 
@@ -138,7 +145,8 @@ def graficar(request,id, x, y, paleta, tamanio):
                                           etiquetas=[request.POST.get("cat_%d" %i) for i in range(len(categorias))])
             return render(request, 'paso3.html', {'form':form,
                                                   'tipo_mapa' : paleta,
-                                                  'salida':nombre })
+                                                  'media': settings.MEDIA_ROOT,
+                                                  'salida': nombre, })
     else:
         if paleta == '1':
             if tamanio == '1':
@@ -180,7 +188,7 @@ def graficar(request,id, x, y, paleta, tamanio):
 
 def download_file(request, filename=''):
     if filename != '':
-        filepath = os.path.join(settings.BASE_DIR,'static', 'Salidas', filename)
+        filepath = os.path.join(settings.MEDIA_ROOT, 'Salidas', filename)
         path = open(filepath, 'rb')
         mime_type = mimetypes.guess_type(filepath)
         response = HttpResponse(path, content_type=mime_type)

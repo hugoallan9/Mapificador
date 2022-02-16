@@ -30,16 +30,13 @@ def mapa_categorias(tipo, ruta_mapa, ruta_excel, variable_union ,variable_pintar
                              mapa=mapa_copia
                              )
     categorias = mapa.get_categories(mapa_copia)
-
-    # mapa.update_labels_categories(valores=[cat.value() for cat in categorias],
-    #                               etiquetas=labels_items, mapa=mapa_copia)
+    mapa.update_labels_categories(valores=[cat.value() for cat in categorias],
+                                  etiquetas=labels_items, mapa=mapa_copia)
     layout = mapa.render()
     mapa.cambiarTamHoja(layout)
     mapa.anadirMapaRender(layout=layout, mapa=mapa_copia, is_there_title= not (titulo == "") )
     mapa.insertarLeyenda(layout=layout, posx=posx_leyenda, posy=posy_leyenda, titulo= titulo_leyenda)
     mapa.exportarMapa(layout=layout, ruta = ruta_exportacion)
-    mapa.exportarMapaPruebas(mapa=mapa_copia)
-    categorias = mapa.get_categories(mapa_copia)
     mapa.removeLayers(temp.name())
     mapa.removeLayers(mapa_copia.name())
     mapa = None

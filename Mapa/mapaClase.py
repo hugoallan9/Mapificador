@@ -108,15 +108,15 @@ class Mapa:
 
     @staticmethod
     def getTamLetraMapa():
-        return 16
-
-    @staticmethod
-    def getTamLetraLeyenda():
         return 14
 
     @staticmethod
+    def getTamLetraLeyenda():
+        return 16
+
+    @staticmethod
     def getTamLetraItem():
-        12
+        return 12
 
     @staticmethod
     def getColorBlanco():
@@ -138,16 +138,9 @@ class Mapa:
                     break
                 else:
                     self.mapa = QgsVectorLayer(ruta, nombre, "ogr")
-                    if self.mapa.isValid():
-                        self.proyecto.addMapLayer(self.mapa)
-                    else:
-                        print("Error al cargar el mapa")
         else:
             self.mapa = QgsVectorLayer(ruta, nombre, "ogr")
-            if self.mapa.isValid():
-                self.proyecto.addMapLayer(self.mapa)
-            else:
-                print("Error al cargar el mapa")
+
 
 
     @staticmethod
